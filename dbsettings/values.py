@@ -78,7 +78,7 @@ class Value(object):
             if isinstance(self, ImageValue):
                 return self.to_python(storage.value_image)                
             else:
-                return self.to_python(storage.value)
+                return self.to_python(storage.value_text)
         except:
             return None
 
