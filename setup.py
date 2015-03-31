@@ -26,7 +26,6 @@ setup(
     install_requires=(
         'six',
     ),
-    zip_safe=False,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
@@ -37,4 +36,5 @@ setup(
         'Programming Language :: Python',
         'Topic :: Utilities'
     ],
+    zip_safe=False,    
 )
