@@ -26,6 +26,7 @@ setup(
     install_requires=(
         'six',
     ),
+    zip_safe=False,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
