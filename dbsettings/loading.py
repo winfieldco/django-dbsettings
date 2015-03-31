@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from django.core.cache import cache
-
 from dbsettings.models import Setting
+import dbsettings
 
 __all__ = ['get_all_settings', 'get_setting', 'get_setting_storage',
            'register_setting', 'unregister_setting', 'set_setting_value']
@@ -46,11 +46,13 @@ def get_setting_storage(module_name, class_name, attribute_name):
             )
         except Setting.DoesNotExist:
             setting_object = get_setting(module_name, class_name, attribute_name)
+
+            # TODO Add back support for defaults
             storage = Setting(
                 module_name=module_name,
                 class_name=class_name,
                 attribute_name=attribute_name,
-                value=setting_object.default,
+                #value=setting_object.default,
             )
         cache.set(key, storage)
     return storage
@@ -67,9 +69,18 @@ def unregister_setting(setting):
 
 
 def set_setting_value(module_name, class_name, attribute_name, value):
+
     setting = get_setting(module_name, class_name, attribute_name)
     storage = get_setting_storage(module_name, class_name, attribute_name)
-    storage.value = setting.get_db_prep_save(value)
+
+    if isinstance(setting, dbsettings.values.ImageValue):
+        # Save to the image field so contains width and height properties as well
+        image = setting.get_db_prep_save(value)
+        storage.value_image.save(image.name, image)
+    else:
+        # Everything else store as text
+        storage.value_text = setting.get_db_prep_save(value)
+
     storage.save()
     key = _get_cache_key(module_name, class_name, attribute_name)
     cache.delete(key)

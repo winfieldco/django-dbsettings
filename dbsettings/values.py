@@ -73,7 +73,12 @@ class Value(object):
                                  (self.attribute_name, cls.__name__))
         try:
             storage = get_setting_storage(*self.key)
-            return self.to_python(storage.value)
+
+            # Depending on the setting type, we pass that specific database value to generate a python object       
+            if isinstance(self, ImageValue):
+                return self.to_python(storage.value_image)                
+            else:
+                return self.to_python(storage.value)
         except:
             return None
 
@@ -202,11 +207,11 @@ class StringValue(Value):
 
 class TextValue(Value):
     unitialized_value = ''
-    field = forms.CharField
+    class field(forms.CharField):
+        widget = forms.Textarea
 
     def to_python(self, value):
         return six.text_type(value)
-
 
 class EmailValue(Value):
     unitialized_value = ''
@@ -296,43 +301,18 @@ class ImageValue(Value):
                 return mark_safe(''.join(output))
 
     def to_python(self, value):
-        "Returns a native Python object suitable for immediate use"
-        return six.text_type(value)
+        # Return the value which is an ImageField image
+        return value
 
     def get_db_prep_save(self, value):
-        "Returns a value suitable for storage into a CharField"
-        if not value:
-            return None
-
-        hashed_name = md5(six.text_type(time.time())).hexdigest() + value.name[-4:]
-        image_path = pjoin(self._upload_to, hashed_name)
-        dest_name = pjoin(settings.MEDIA_ROOT, image_path)
-        directory = pjoin(settings.MEDIA_ROOT, self._upload_to)
-
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        with open(dest_name, 'wb+') as dest_file:
-            for chunk in value.chunks():
-                dest_file.write(chunk)
-
-        return six.text_type(image_path)
+        # Return the value which is an ImageField image
+        return value
 
     def to_editor(self, value):
         "Returns a value suitable for display in a form widget"
         if not value:
             return None
-
-        file_name = pjoin(settings.MEDIA_ROOT, value)
-        try:
-            with open(file_name, 'rb') as f:
-                uploaded_file = SimpleUploadedFile(value, f.read(), 'image')
-
-                # hack to retrieve path from `name` attribute
-                uploaded_file.__dict__['_name'] = value
-                return uploaded_file
-        except IOError:
-            return None
-
+        return value
 
 class DateTimeValue(Value):
     field = forms.DateTimeField

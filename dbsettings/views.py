@@ -41,7 +41,8 @@ def app_settings(request, app_label, template='dbsettings/app_settings.html'):
                     current_value = None
 
                 if current_value != setting.to_python(value):
-                    args = key + (value,)
+                    args = key + (value,) 
+
                     loading.set_setting_value(*args)
 
                     # Give user feedback as to which settings were changed

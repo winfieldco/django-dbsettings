@@ -4,7 +4,8 @@ from collections import OrderedDict
 from django.db.models import get_model
 from django import forms
 from django.utils.text import capfirst
-
+import logging
+from dbsettings.values import ImageValue
 from dbsettings.loading import get_setting_storage
 
 
@@ -50,14 +51,24 @@ def customized_editor(user, settings):
             setting.app,
             setting.class_name.lower()
         )
+
         if user.has_perm(perm):
+
             # Add the field to the customized field list
             storage = get_setting_storage(*setting.key)
+            storage_value = None
+
+            # Depending on the setting type, we get the storage value
+            if isinstance(setting, ImageValue):
+                storage_value = storage.value_image
+            else:
+                storage_value = storage.value_text
+
             kwargs = {
                 'label': setting.description,
                 'help_text': setting.help_text,
                 # Provide current setting values for initializing the form
-                'initial': setting.to_editor(storage.value),
+                'initial': setting.to_editor(storage_value),
                 'required': setting.required,
             }
             if setting.choices:

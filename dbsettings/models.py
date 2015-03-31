@@ -15,7 +15,8 @@ class Setting(models.Model):
     module_name = models.CharField(max_length=255)
     class_name = models.CharField(max_length=255, blank=True)
     attribute_name = models.CharField(max_length=255)
-    value = models.CharField(max_length=255, blank=True)
+    value_text = models.TextField(blank=True, null=True)    
+    value_image = models.ImageField(blank=True, null=True, max_length=512, upload_to='dbsettings/image/%Y/%m/%d')  
 
     objects = SettingManager()
 
