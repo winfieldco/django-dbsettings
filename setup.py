@@ -12,7 +12,7 @@ else:
 
 setup(
     name='django-dbsettings',
-    version="0.7.2-post1",
+    version="0.7.2-post2",
     description='Application settings whose values can be updated while a project is up and running.',
     long_description=open('README.rst').read(),
     author='Samuel Cormier-Iijima',
