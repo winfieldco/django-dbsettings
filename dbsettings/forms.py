@@ -52,7 +52,11 @@ def customized_editor(user, settings):
             setting.class_name.lower()
         )
 
-        if user.has_perm(perm):
+        # We just use a global permission rather than
+        # granular. There are issues with the granular 
+        # permission system, for instance if an app has
+        # no models to migrate it won't work.
+        if user.has_perm('dbsettings.change_setting'):
 
             # Add the field to the customized field list
             storage = get_setting_storage(*setting.key)

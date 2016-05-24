@@ -1,4 +1,4 @@
-from django.db.models.signals import post_migrate
+from django.db.models.signals import post_syncdb
 
 
 def mk_permissions(permissions, appname, verbosity):
@@ -25,14 +25,21 @@ def mk_permissions(permissions, appname, verbosity):
 
 def handler(sender, **kwargs):
     from dbsettings.loading import get_app_settings
-    app_label = sender.label
+    app_label = sender.__name__.split('.')[-2]
     are_global_settings = any(not s.class_name for s in get_app_settings(app_label))
     if are_global_settings:
         permission = (
             'can_edit__settings',
             'Can edit %s non-model settings' % app_label,
         )
-        mk_permissions([permission], app_label, 0)
+
+        # Disable the making of perms based on the app settings app,
+        # instead we will just use the global dbsettings perm, as there
+        # are issues with app level perms, for instance apps without
+        # model migrations won't work, and migrate keeps complaining
+        # to delete stale content types...
+        
+        # mk_permissions([permission], app_label, 0)
 
 
-post_migrate.connect(handler)
+post_syncdb.connect(handler)
