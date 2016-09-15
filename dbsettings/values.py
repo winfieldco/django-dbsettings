@@ -78,6 +78,9 @@ class Value(object):
             if isinstance(self, ImageValue):
                 return self.to_python(storage.value_image)                
             else:
+                # Legacy fix because default=None was saving as the string None...
+                if storage.value_text == "None":
+                    return None
                 return self.to_python(storage.value_text)
         except:
             return None
