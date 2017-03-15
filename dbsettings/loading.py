@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from django.core.cache import cache
 from dbsettings.models import Setting
+from django.conf import settings
 import dbsettings
 
 __all__ = ['get_all_settings', 'get_setting', 'get_setting_storage',
@@ -11,7 +12,7 @@ _settings = OrderedDict()
 
 
 def _get_cache_key(module_name, class_name, attribute_name):
-    return '.'.join(['dbsettings', module_name, class_name, attribute_name])
+    return '.'.join(['dbsettings', settings.APP_ENTRY['id'], module_name, class_name, attribute_name])
 
 
 def get_all_settings():
