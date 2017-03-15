@@ -12,7 +12,7 @@ _settings = OrderedDict()
 
 
 def _get_cache_key(module_name, class_name, attribute_name):
-    return '.'.join(['dbsettings', settings.APP_ENTRY['id'], module_name, class_name, attribute_name])
+    return '.'.join(['dbsettings', str(settings.APP_ENTRY['id']), module_name, class_name, attribute_name])
 
 
 def get_all_settings():
