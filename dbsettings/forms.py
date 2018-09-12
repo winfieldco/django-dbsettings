@@ -1,7 +1,7 @@
 import re
 
 from collections import OrderedDict
-from django.db.models import get_model
+from django.apps import apps
 from django import forms
 from django.utils.text import capfirst
 import logging
@@ -32,7 +32,7 @@ class SettingsEditor(forms.BaseForm):
         field.module_name = app_label
 
         if class_name:
-            model = get_model(app_label, class_name)
+            model = apps.get_model(app_label=app_label, model_name=class_name)
             if model:
                 class_name = model._meta.verbose_name
         field.class_name = class_name
